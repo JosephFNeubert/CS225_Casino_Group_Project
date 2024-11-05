@@ -7,6 +7,7 @@ class Card {
         string suite;
         int rank;
     public:
+        int index;
         Card(string suite, int rank) : suite(suite), rank(rank) {}
         Card(){
             suite = suite;
