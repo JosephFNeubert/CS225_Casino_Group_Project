@@ -9,9 +9,11 @@ using namespace std;
 
 class Deck : public Card {
     private:
-        vector<Card> deck;
+        
 
     public:
+        vector<Card> deck;
+        int index;
         Deck() {
             string suites[] = { "Hearts", "Diamonds", "Spades", "Clubs" };
 
