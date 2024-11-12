@@ -40,3 +40,30 @@ void Player::modifyBalance(double money, int operation) {
 int Player::getBalance() const {
 	return balance;
 }
+
+int Player::calculateHandValue() const {
+        int total = 0;
+        int aceCount = 0;
+
+        // Calculate the initial total, treating aces as 11
+        for (const Card& card : hand) {
+            int rank = card.getRank();
+            if (rank == 1) {  // Ace
+                total += 11;
+                ++aceCount;
+            } else if (rank >= 11 && rank <= 13) {  // Face cards (Jack, Queen, King)
+                total += 10;
+            } else {  // Numeric cards
+                total += rank;
+            }
+        }
+
+        // Adjust for aces if total is over 21
+        while (total > 21 && aceCount > 0) {
+            total -= 10;  // Count one ace as 1 instead of 11
+            --aceCount;
+        }
+
+        return total;
+    }
+
