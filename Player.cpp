@@ -65,5 +65,8 @@ int Player::calculateHandValue() const {
         }
 
         return total;
-    }
+}
+void Player::clearHand() {
+	hand.clear();
+}
 
