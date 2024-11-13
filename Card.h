@@ -1,18 +1,17 @@
 #pragma once
 #include <iostream>
-
 using namespace std;
+
 class Card {
 private:
     string suite;
     int rank;
+
 public:
     int index;
-    Card(string suite, int rank) : suite(suite), rank(rank) {}
-    Card() {
-        suite = suite;
-        rank = rank;
-    }
+
+    Card(string suite, int rank);
+    Card();
     friend ostream& operator<<(ostream& os, const Card& card) {
         string rankStr;
         if (card.rank == 1) {
@@ -36,7 +35,6 @@ public:
         }
         return os;
     }
-    string getSuite() const { return suite; }
-    int getRank() const { return rank; }
-
+    string getSuite() const;
+    int getRank() const;
 };
