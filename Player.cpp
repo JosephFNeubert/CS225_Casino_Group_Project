@@ -13,6 +13,10 @@ Card Player::getCard(int index) const {
 	return hand.at(index);
 }
 
+void Player::setBalance(double money) {
+	balance = money;
+}
+
 void Player::modifyBalance(double money, int operation) {
 	try {
 		if (operation == 1) {
@@ -48,17 +52,17 @@ int Player::calculateHandValue() const {
 			total += 11;
 			++aceCount;
 		}
-		else if (rank >= 11 && rank <= 13) {  
+		else if (rank >= 11 && rank <= 13) {
 			total += 10;
 		}
-		else { 
+		else {
 			total += rank;
 		}
 	}
 
 
 	while (total > 21 && aceCount > 0) {
-		total -= 10;  
+		total -= 10;
 		--aceCount;
 	}
 
