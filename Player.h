@@ -9,12 +9,12 @@ class Player {
 private:
 	vector<Card> hand;
 	double balance;
-	double bet;
 
 public:
 	Player(double money = 200);
 	void receiveCard(Deck& deck, int index);
 	Card getCard(int index) const;
+	void setBalance(double money);
 	void modifyBalance(double money, int operation);
 	int getBalance() const;
 	int calculateHandValue() const;
