@@ -1,7 +1,11 @@
 #include "User.h"
 using namespace std;
 
-User::User(string name, string fileName) : Player() {
+User::User(string name) : Player() {
+	this->name = name;
+}
+
+void User::changeUserName(string name, string fileName) {
 	bool validName = true;
 	string line;
 	string tempName;
@@ -35,7 +39,7 @@ User::User(string name, string fileName) : Player() {
 				}
 			}
 		}
-		
+
 		if (validName) {
 			this->name = name;
 		}
@@ -45,13 +49,17 @@ User::User(string name, string fileName) : Player() {
 	}
 }
 
+string User::getUserName() const {
+	return name;
+}
+
 void User::saveUserInfo(string fileName) {
 	ofstream file(fileName, ios::app);
-	file << name << " " << getBalance << "\n";
+	file << name << " " << getBalance() << "\n";
 	file.close();
 }
 
-void User::getUserInfo(string fileName, string inputName) {
+bool User::getUserInfo(string fileName, string inputName) {
 	bool userFound = false;
 	string tempName;
 	double tempBalance;
@@ -59,7 +67,7 @@ void User::getUserInfo(string fileName, string inputName) {
 	ifstream file(fileName);
 	if (!file) {
 		cout << "Error opening the file. Please retype the file name." << endl;
-		return;
+		return false;
 	}
 	else {
 		while (getline(file, line)) {
@@ -73,7 +81,14 @@ void User::getUserInfo(string fileName, string inputName) {
 			}
 		}
 
-		cout << "Success! Welcome back to the casino " << inputName << "." << endl;
 		file.close();
+		if (userFound) {
+			cout << "Success! Welcome back to the casino " << inputName << "." << endl;
+			return true;
+		}
+		else {
+			cout << "User not found." << endl;
+			return false;
+		}
 	}
 }
