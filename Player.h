@@ -15,7 +15,9 @@ public:
 	Player(double money = 200);
 	void receiveCard(Deck& deck, int index);
 	Card getCard(int index) const;
-	void fold();
 	void modifyBalance(double money, int operation);
 	int getBalance() const;
+	int calculateHandValue() const;
+	void clearHand();
+	size_t getHandSize();
 };
