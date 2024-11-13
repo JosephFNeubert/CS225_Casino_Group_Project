@@ -1,5 +1,8 @@
 #pragma once
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include "Player.h"
 using namespace std;
 
@@ -8,7 +11,7 @@ private:
 	string name;
 
 public:
-	User(double money, string name);
-	void savePlayerInfo();
-	void receivePlayerInfo();
+	User(string name, string fileName);
+	void saveUserInfo(string fileName);
+	void getUserInfo(string fileName, string inputName);
 };
