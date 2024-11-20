@@ -9,6 +9,7 @@ void User::changeUserName(string name, string fileName) {
 	bool validName = true;
 	string line;
 	string tempName;
+	double tempBalance;
 	ifstream file(fileName);
 	if (!file) {
 		cout << "Error opening the file. Please retype the file name." << endl;
@@ -17,46 +18,89 @@ void User::changeUserName(string name, string fileName) {
 	else {
 		while (getline(file, line)) {
 			istringstream stream(line);
-			if (stream >> tempName) {
+			if (stream >> tempName >> tempBalance) {
 				if (tempName == name) {
 					validName = false;
 					file.seekg(0);
+					break;
 				}
 			}
 		}
 
 		string newName;
+		bool flag = false;
 		while (!validName) {
 			cout << "That name already exists. Please select another name." << endl;
+			flag = true;
 			cin >> newName;
 			while (getline(file, line)) {
 				istringstream stream(line);
-				if (stream >> tempName) {
+				if (stream >> tempName >> tempBalance) {
 					if (tempName == newName) {
 						file.seekg(0);
-						continue;
+						cin.clear();
+						cin.ignore(INT_MAX, '\n');
+						flag = false;
+						break;
 					}
 				}
 			}
+			if (flag) {
+				validName = true;
+			}
 		}
 
-		if (validName) {
-			this->name = name;
-		}
-		else {
+		if (flag) {
 			this->name = newName;
 		}
+		else {
+			this->name = name;
+		}
+		cout << "Success! Welcome to the casino " << this->name << "." << endl;
 	}
+	file.close();
 }
 
 string User::getUserName() const {
 	return name;
 }
 
-void User::saveUserInfo(string fileName) {
-	ofstream file(fileName, ios::app);
-	file << name << " " << getBalance() << "\n";
-	file.close();
+void User::saveUserInfo(string fileName, bool nameRecorded) {
+	if (nameRecorded) {
+		ifstream fileIn(fileName);
+		if (!fileIn) {
+			cout << "Error opening the file. Please retype the file name." << endl;
+			return;
+		}
+		else {
+			string tempSavedData = "";
+			string tempString;
+			string tempName;
+			double tempBalance;
+			while (getline(fileIn, tempString)) {
+				istringstream stream(tempString);
+				if (stream >> tempName >> tempBalance) {
+					if (tempName == name) {
+						tempBalance = getBalance();
+					}
+					tempSavedData += tempName;
+					tempSavedData += " ";
+					tempSavedData += to_string(tempBalance);
+					tempSavedData += "\n";
+				}
+			}
+			tempSavedData.pop_back();
+			fileIn.close();
+			ofstream fileOut(fileName);
+			fileOut << tempSavedData;
+			fileOut.close();
+		}
+	}
+	else {
+		ofstream fileOut(fileName, ios::app);
+		fileOut << "\n" << name << " " << getBalance();
+		fileOut.close();
+	}
 }
 
 bool User::getUserInfo(string fileName, string inputName) {
