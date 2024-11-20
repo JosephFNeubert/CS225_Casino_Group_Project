@@ -29,11 +29,12 @@ void Player::modifyBalance(double money, int operation) {
 			}
 		}
 		else {
-			throw("Invalid operation.");
+			throw(operation);
 		}
 	}
-	catch (string x) {
-		cout << x << "\nPlease input either '1' or '2' for addition or subtraction respectively." << endl;
+	catch (int x) {
+		cout << "ERROR: Operation number " << x << " is invalid.\nPlease input either '1' or '2' for addition or subtraction respectively." << endl;
+		exit(0);
 	}
 }
 
