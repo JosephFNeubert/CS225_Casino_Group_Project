@@ -14,6 +14,6 @@ public:
 	User(string name);
 	void changeUserName(string name, string fileName);
 	string getUserName() const;
-	void saveUserInfo(string fileName);
+	void saveUserInfo(string fileName, bool nameRecorded);
 	bool getUserInfo(string fileName, string inputName);
 };
