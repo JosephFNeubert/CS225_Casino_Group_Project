@@ -1,9 +1,9 @@
 /****************************************************************************
- * Project:  CS225_Casino_Project
- * Author:   Connor Shackleford and Joseph Neubert
- * Purpose:  Project that simulates a casino and allows for multiple games and betting on fake money.
- * Version:  1.0 Nov 13, 2024
- * Resources: N/A
+ * Project:   CS225_Casino_Project
+ * Author:    Connor Shackleford and Joseph Neubert
+ * Purpose:   Project that simulates a casino and allows for multiple games and betting on fake money.
+ * Version:   1.0 Nov 13, 2024
+ * Resources: W3 School and StackOverflow for research
  *******************************************************************************/
 
 // Import libraries and header files
@@ -26,78 +26,85 @@ void playSlots(User& User);
 int main() {
     srand(time(0));
     Deck cardDeck;
-    User user("Default");
+    User user("Placeholder");
 
-    while (true) {
-        bool playCondition = true;
-        int flag1 = 0;
-        while (true) {
-            cout << "Welcome to the casino! If you are a returning player, please type '1'. If you're new, type '2'." << endl;
-            cin >> flag1;
+    // To create or scan in the user profile, their name, and their balance
+    bool playCondition = true;
+    bool userDownloaded = false;
+    bool userDownloadedFromFile = false;
+    int flag1 = 0;
+    while (!userDownloaded) {
+        cout << "Welcome to the casino! If you are a returning player, please type '1'. If you're new, type '2'." << endl;
+        cin >> flag1;
 
-            if (flag1 == 1) {
-                bool userFound = false;
-                string inputName;
-                while (!userFound) {
-                    cout << "Type the name of your saved user. Type '1' to create a new user." << endl;
-                    cin >> inputName;
-                    userFound = user.getUserInfo("savedData.txt", inputName);
-                    if (inputName == "1") {
-                        cout << "What would you like your name to be?" << endl;
-                        cin >> inputName;
-                        user.changeUserName(inputName, "savedData.txt");
-                        break;
-                    }
-                }
-            }
-            else if (flag1 == 2) {
-                string inputName;
-                cout << "What would you like your name to be?" << endl;
+        if (flag1 == 1) {
+            bool userFound = false;
+            string inputName;
+            while (!userFound) {
+                cout << "Type the name of your saved user. Type '1' to create a new user." << endl;
                 cin >> inputName;
-                user.changeUserName(inputName, "savedData.txt");
-                break;
-            }
-            else {
-                cout << "That was an invalid option. Please try again." << endl;
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
+                if (inputName == "1") {
+                    cout << "What would you like your name to be?" << endl;
+                    cin >> inputName;
+                    user.changeUserName(inputName, "savedData.txt");
+                    userFound = true;
+                    userDownloaded = true;
+                    break;
+                }
+                userFound = user.getUserInfo("savedData.txt", inputName);
+                userDownloaded = userFound;
+                userDownloadedFromFile = true;
             }
         }
-
-        int flag2 = 0;
-        while (playCondition) {
-            cout << "You are now in the casino's lobby. Type '1' to play blackjack, type '2' to play roulette, type '3' to play the slot machine, type 4 to check your current balance, type 5 to exit the casino." << endl;
-            cin >> flag2;
-
-            if (flag2 == 1) {
-                playBlackJack(cardDeck, user);
-            }
-            else if (flag2 == 2) {
-
-            }
-            else if (flag2 == 3) {
-
-            }
-            else if (flag2 == 4) {
-                cout << "Your balance is " << user.getBalance() << "." << endl;
-            }
-            else if (flag2 == 5) {
-                playCondition = false;
-            }
-            else {
-                cout << "That was an invalid option. Please try again." << endl;
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
-            
+        else if (flag1 == 2) {
+            string inputName;
+            cout << "What would you like your name to be?" << endl;
+            cin >> inputName;
+            user.changeUserName(inputName, "savedData.txt");
+            break;
+        }
+        else {
+            cout << "That was an invalid option. Please try again." << endl;
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
         }
     }
 
+    // To create a "main menu" for the casino to select options/games
+    int flag2 = 0;
+    while (playCondition) {
+        cout << "You are now in the casino's lobby. Type '1' to play blackjack, type '2' to play roulette, type '3' to play the slot machine, type 4 to check your current balance, type 5 to exit the casino." << endl;
+        cin >> flag2;
+
+        if (flag2 == 1) {
+            playBlackJack(cardDeck, user);
+        }
+        else if (flag2 == 2) {
+            playRoulette(user);
+        }
+        else if (flag2 == 3) {
+            playSlots(user);
+        }
+        else if (flag2 == 4) {
+            cout << "Your balance is " << user.getBalance() << "." << endl;
+        }
+        else if (flag2 == 5) {
+            playCondition = false;
+        }
+        else {
+            cout << "That was an invalid option. Please try again." << endl;
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+        } 
+    }
+
+    // To save user data once the user exits the casino program
     string saveData;
     cout << "To save your information for next time, type 'Save'. Otherwise, your data will be lost." << endl;
     cin >> saveData;
     if (saveData == "Save" || saveData == "save") {
-        user.saveUserInfo("savedData.txt");
+        user.saveUserInfo("savedData.txt", userDownloadedFromFile);
+        cout << "Data saved. Come back soon!" << endl;
     }
     else {
         cout << "Data lost. Come back soon!" << endl;
@@ -277,10 +284,12 @@ void playRoulette(User& User) {
             if (rouletteNumber == betType1) {
                 cout << "You win! You will receive a 35:1 payout!" << endl;
                 User.modifyBalance(bet * 36, 1);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
             else {
                 cout << "You lose!" << endl;
                 User.modifyBalance(bet, 2);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
         }
 
@@ -311,18 +320,23 @@ void playRoulette(User& User) {
             int rouletteNumberIsEven = rouletteNumber % 2;
             if (rouletteNumber == 0) {
                 cout << "You lose!" << endl;
+                User.modifyBalance(bet, 2);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
             else if (isEven && rouletteNumberIsEven == 0) {
                 cout << "You win! You will receive a 1:1 payout!" << endl;
                 User.modifyBalance(bet, 1);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
             else if (!isEven && rouletteNumberIsEven == 1) {
                 cout << "You win! You will receive a 1:1 payout!" << endl;
                 User.modifyBalance(bet, 1);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
             else {
                 cout << "You lose!" << endl;
                 User.modifyBalance(bet, 2);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
         }
 
@@ -357,18 +371,22 @@ void playRoulette(User& User) {
             if (betType3 == 1 && (rouletteNumber >= 1 && rouletteNumber <= 12)) {
                 cout << "You win! You will receive a 2:1 payout!" << endl;
                 User.modifyBalance(bet * 2, 1);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
             else if (betType3 == 2 && (rouletteNumber >= 13 && rouletteNumber <= 24)) {
                 cout << "You win! You will receive a 2:1 payout!" << endl;
                 User.modifyBalance(bet * 2, 1);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
             else if (betType3 == 3 && (rouletteNumber >= 25 && rouletteNumber <= 36)) {
                 cout << "You win! You will receive a 2:1 payout!" << endl;
                 User.modifyBalance(bet * 2, 1);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
             else {
                 cout << "You lose!" << endl;
                 User.modifyBalance(bet, 2);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
         }
        
@@ -399,14 +417,17 @@ void playRoulette(User& User) {
             if (betType4 == 1 && (rouletteNumber >= 1 && rouletteNumber <= 18)) {
                 cout << "You win! You will receive a 1:1 payout!" << endl;
                 User.modifyBalance(bet, 1);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
             else if (betType4 == 2 && (rouletteNumber >= 19 && rouletteNumber <= 36)) {
                 cout << "You win! You will receive a 1:1 payout!" << endl;
                 User.modifyBalance(bet, 1);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
             else {
                 cout << "You lose!" << endl;
                 User.modifyBalance(bet, 2);
+                cout << "New balance is " << User.getBalance() << "." << endl;
             }
         }
 
@@ -439,7 +460,7 @@ void playSlots(User& User) {
         while (true) {
             cout << "How much will you bet? Once you enter the quantity, you will hit the machine's lever. There is no minimum." << endl;
             cin >> bet;
-            if (!cin || bet > User.getBalance()) {
+            if (!cin || bet > User.getBalance() || bet <= 0) {
                 cout << "The bet is invalid. Try again." << endl;
                 cin.clear();
                 cin.ignore(INT_MAX, '\n');
@@ -457,14 +478,17 @@ void playSlots(User& User) {
         if (slot1 == 3 && slot2 == 3 && slot3 == 3) {
             cout << "You got three lucky numbers in a row! You will receive a 7:1 payout!" << endl;
             User.modifyBalance(bet * 8, 1);
+            cout << "New balance is " << User.getBalance() << "." << endl;
         }
-        else if (slot1 == slot2 == slot3) {
+        else if (slot1 == slot2 && slot2 == slot3) {
             cout << "You got three objects in a row! You will receive a 2:1 payout!" << endl;
             User.modifyBalance(bet * 2, 1);
+            cout << "New balance is " << User.getBalance() << "." << endl;
         }
         else {
             cout << "Too bad! You don't win anything." << endl;
             User.modifyBalance(bet, 2);
+            cout << "New balance is " << User.getBalance() << "." << endl;
         }
 
         cout << "Do you want to play again? (yes or no) ";
