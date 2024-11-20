@@ -12,6 +12,8 @@ private:
 
 public:
 	User(string name);
+	int gamesPlayed;
+	int gamesWon;
 	void changeUserName(string name, string fileName);
 	string getUserName() const;
 	void saveUserInfo(string fileName, bool nameRecorded);
