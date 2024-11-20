@@ -6,7 +6,7 @@
  * Resources: W3 School and StackOverflow for research
  *******************************************************************************/
 
-// Import libraries and header files
+ // Import libraries and header files
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
@@ -75,7 +75,14 @@ int main() {
     while (playCondition) {
         cout << "You are now in the casino's lobby. Type '1' to play blackjack, type '2' to play roulette, type '3' to play the slot machine, type 4 to check your current balance, type 5 to exit the casino." << endl;
         cin >> flag2;
-
+        if (user.getBalance() < 5) {
+            cout << "You have no Money. Exiting Casino." << endl;
+            playCondition = false;
+        }
+        if (user.gamesPlayed > 10 && user.gamesWon / user.gamesPlayed > .8) {
+            cout << "You have been banned for cheating. Two men in suits just tossed you into the gutter" << endl;
+            playCondition = false;
+        }
         if (flag2 == 1) {
             playBlackJack(cardDeck, user);
         }
@@ -91,11 +98,13 @@ int main() {
         else if (flag2 == 5) {
             playCondition = false;
         }
+
         else {
             cout << "That was an invalid option. Please try again." << endl;
             cin.clear();
             cin.ignore(INT_MAX, '\n');
-        } 
+        }
+        
     }
 
     // To save user data once the user exits the casino program
@@ -125,6 +134,11 @@ void playBlackJack(Deck& deck, User& User) {
     while (Playing) {
         playerSum = 0;
         dealerSum = 0;
+        if (User.getBalance() < 5) {
+            cout << "You have no Money. Exiting Casino." << endl;
+            Playing = false;
+            break;
+        }
         deck.shuffleDeck();
         User.clearHand();
         Dealer.clearHand();
@@ -141,6 +155,7 @@ void playBlackJack(Deck& deck, User& User) {
                 break;
             }
         }
+        ++User.gamesPlayed;
 
         User.receiveCard(deck, deck.index);
         Dealer.receiveCard(deck, deck.index);
@@ -178,8 +193,10 @@ void playBlackJack(Deck& deck, User& User) {
                 }
                 if (playerSum == 21) {
                     Playing = false;
+                    playerTurn = false;
                     cout << "You Win!" << endl;
                     User.modifyBalance(bet, 1);
+                    ++User.gamesWon;
                 }
             }
             else if (decision == "Stay" || decision == "stay") {
@@ -208,6 +225,7 @@ void playBlackJack(Deck& deck, User& User) {
                     cout << "Dealer busts! You win!" << endl;
                     Playing = false;
                     User.modifyBalance(bet, 1);
+                    ++User.gamesWon;
                 }
             }
 
@@ -215,6 +233,7 @@ void playBlackJack(Deck& deck, User& User) {
                 if (playerSum > dealerSum) {
                     cout << "You win!" << endl;
                     User.modifyBalance(bet, 1);
+                    ++User.gamesWon;
                 }
                 else if (playerSum < dealerSum) {
                     cout << "Dealer wins!" << endl;
@@ -227,6 +246,10 @@ void playBlackJack(Deck& deck, User& User) {
         }
 
         cout << "New balance is " << User.getBalance() << "." << endl;
+        if (User.getBalance() < 5) {
+            cout << "You have no Money. Exiting Casino." << endl;
+            Playing = false;
+        }
         cout << "Do you want to play again? (yes or no) ";
         string replay;
         cin >> replay;
@@ -248,6 +271,10 @@ void playRoulette(User& User) {
     int betType;
 
     while (playing) {
+        if (User.getBalance() < 5) {
+            cout << "You have no Money. Exiting Casino." << endl;
+            playing = false;
+        }
         while (true) {
             cout << "How much will you bet? There is a $5 minimum." << endl;
             cin >> bet;
@@ -260,7 +287,7 @@ void playRoulette(User& User) {
                 break;
             }
         }
-
+        ++User.gamesPlayed;
         cout << "What are you betting on for roulette? Type '1' to bet on a single number, type '2' to bet on even or odd, type '3' to bet on a dozen numbers, or type '4' to bet on 1-18 / 19-36." << endl;
         cin >> betType;
         if (betType == 1) {
@@ -285,6 +312,7 @@ void playRoulette(User& User) {
                 cout << "You win! You will receive a 35:1 payout!" << endl;
                 User.modifyBalance(bet * 36, 1);
                 cout << "New balance is " << User.getBalance() << "." << endl;
+                ++User.gamesWon;
             }
             else {
                 cout << "You lose!" << endl;
@@ -313,7 +341,7 @@ void playRoulette(User& User) {
                     cout << "That was an invalid option. Please try again." << endl;
                 }
             }
-            
+
             cout << "You selected " << betType2 << ". The roulette wheel now spins..." << endl;
             rouletteNumber = rand() % 37;
             cout << "The roulette wheel has hit " << rouletteNumber << "." << endl;
@@ -327,11 +355,13 @@ void playRoulette(User& User) {
                 cout << "You win! You will receive a 1:1 payout!" << endl;
                 User.modifyBalance(bet, 1);
                 cout << "New balance is " << User.getBalance() << "." << endl;
+                ++User.gamesWon;
             }
             else if (!isEven && rouletteNumberIsEven == 1) {
                 cout << "You win! You will receive a 1:1 payout!" << endl;
                 User.modifyBalance(bet, 1);
                 cout << "New balance is " << User.getBalance() << "." << endl;
+                ++User.gamesWon;
             }
             else {
                 cout << "You lose!" << endl;
@@ -372,16 +402,19 @@ void playRoulette(User& User) {
                 cout << "You win! You will receive a 2:1 payout!" << endl;
                 User.modifyBalance(bet * 2, 1);
                 cout << "New balance is " << User.getBalance() << "." << endl;
+                ++User.gamesWon;
             }
             else if (betType3 == 2 && (rouletteNumber >= 13 && rouletteNumber <= 24)) {
                 cout << "You win! You will receive a 2:1 payout!" << endl;
                 User.modifyBalance(bet * 2, 1);
                 cout << "New balance is " << User.getBalance() << "." << endl;
+                ++User.gamesWon;
             }
             else if (betType3 == 3 && (rouletteNumber >= 25 && rouletteNumber <= 36)) {
                 cout << "You win! You will receive a 2:1 payout!" << endl;
                 User.modifyBalance(bet * 2, 1);
                 cout << "New balance is " << User.getBalance() << "." << endl;
+                ++User.gamesWon;
             }
             else {
                 cout << "You lose!" << endl;
@@ -389,7 +422,7 @@ void playRoulette(User& User) {
                 cout << "New balance is " << User.getBalance() << "." << endl;
             }
         }
-       
+
         else if (betType == 4) {
             int betType4;
             string betType4String;
@@ -418,11 +451,13 @@ void playRoulette(User& User) {
                 cout << "You win! You will receive a 1:1 payout!" << endl;
                 User.modifyBalance(bet, 1);
                 cout << "New balance is " << User.getBalance() << "." << endl;
+                ++User.gamesWon;
             }
             else if (betType4 == 2 && (rouletteNumber >= 19 && rouletteNumber <= 36)) {
                 cout << "You win! You will receive a 1:1 payout!" << endl;
                 User.modifyBalance(bet, 1);
                 cout << "New balance is " << User.getBalance() << "." << endl;
+                ++User.gamesWon;
             }
             else {
                 cout << "You lose!" << endl;
@@ -436,7 +471,10 @@ void playRoulette(User& User) {
             cin.clear();
             cin.ignore(INT_MAX, '\n');
         }
-
+        if (User.getBalance() < 5) {
+            cout << "You have no Money. Exiting Casino." << endl;
+            playing = false;
+        }
         cout << "Do you want to play again? (yes or no) ";
         string replay;
         cin >> replay;
@@ -457,6 +495,11 @@ void playSlots(User& User) {
     int bet;
 
     while (playing) {
+        if (User.getBalance() < 5) {
+            cout << "You have no Money. Exiting Casino." << endl;
+            playing = false;
+        }
+        ++User.gamesPlayed;
         while (true) {
             cout << "How much will you bet? Once you enter the quantity, you will hit the machine's lever. There is no minimum." << endl;
             cin >> bet;
@@ -479,11 +522,13 @@ void playSlots(User& User) {
             cout << "You got three lucky numbers in a row! You will receive a 7:1 payout!" << endl;
             User.modifyBalance(bet * 8, 1);
             cout << "New balance is " << User.getBalance() << "." << endl;
+            ++User.gamesWon;
         }
         else if (slot1 == slot2 && slot2 == slot3) {
             cout << "You got three objects in a row! You will receive a 2:1 payout!" << endl;
             User.modifyBalance(bet * 2, 1);
             cout << "New balance is " << User.getBalance() << "." << endl;
+            ++User.gamesWon;
         }
         else {
             cout << "Too bad! You don't win anything." << endl;
